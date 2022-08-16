@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lambert材质</title>
+    <title>平行光</title>
     <!-- 声明外部文件 -->
     <script type="text/javascript" src="../lib/three.js"></script>
-    <style>
-        /* body{
-            background-color: #3c7db1;
-        } */
-    </style>
+    <!-- <style>
+        body{
+            background-color: #e22323;
+        }
+    </style> -->
 </head>
 <body>
     <!-- 2.创建容器 -->
@@ -32,29 +32,33 @@
         console.log(scene)
 
         // 6.创建相机
-        const camera = new THREE.OrthographicCamera(-7, 6, 5.75, -4.75, 0.1, 100);
-        camera.position.set(25, 25, 25);
-        camera.lookAt(new THREE.Vector3(1, 0, 0));
+        const camera = new THREE.OrthographicCamera(-5, 5, 4, -4, 0.1, 200);
+        camera.position.set(5, 15, 25)
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
         scene.add(camera)
 
-        // 7.光照
-        const light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(10, 15, 5);
+        // var light = new THREE.AmbientLight(0xe22323);
+        var light = new THREE.DirectionalLight();
+        light.position.set(2, 5, 3);
         scene.add(light);
 
-        // 8.材质定义Lambert材质
-        const material = new THREE.MeshLambertMaterial({
-          // 十六进制RGB颜色
-          color: 0xffff00,
-          // 自发光颜色，可以用来表现光源的颜色。单独使用红色的自发光
-          emissive: 0xff0000
-        });
+        // 7.创建图形
+        let greenCube = new THREE.Mesh(new THREE.CubeGeometry(2, 1, 2),
+                new THREE.MeshLambertMaterial({color: 0x00ff00}));
+        greenCube.position.x = 1;
+        scene.add(greenCube);
+
+        // 7.创建图形
+        let whiteCube = new THREE.Mesh(new THREE.CubeGeometry(1, 2, 2),
+                new THREE.MeshLambertMaterial(
+                  {
+                    color: 0xffffff,
+                  }
+                ));
+        whiteCube.position.x = -2;
+        scene.add(whiteCube);
         
-        // 9.创建球体
-        const cube = new THREE.Mesh(new THREE.SphereGeometry(4, 45, 45), material);
-        scene.add(cube);
-        
-        // 10.渲染
+        // 8.渲染
         renderer.render(scene, camera)
       }
 

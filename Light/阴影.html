@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 声明外部文件 -->
+    <script type="text/javascript" src="../lib/three.js"></script>
+    <!-- <style>
+        body{
+            background-color: #e22323;
+        }
+    </style> -->
+</head>
+<body>
+    <!-- 2.创建容器 -->
+    <canvas id="mainCanvas" width="600px" height="300px"></canvas>
+    <script>
+        // 3.初始化方法
+      window.onload = function () {
+        // 4.渲染器将和Canvas进行绑定
+        const renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("mainCanvas"),
+        })
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapSoft = true;
+        // 设置颜色，第一个参数为颜色，第二个参数为透明度
+        // renderer.setClearColor(0x7fffd4, 0.6);
+        console.log(renderer)
+
+        // 5.创建场景
+        const scene = new THREE.Scene();
+        console.log(scene)
+
+        // 6.创建相机
+        const camera = new THREE.OrthographicCamera(-5, 5, 4, -4, 0.1, 200);
+        camera.position.set(5,15, 5)
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        scene.add(camera)
+
+        // 7.创建图形
+        // 平面
+        var plane = new THREE.Mesh(new THREE.PlaneGeometry(6, 6, 16, 16),
+                new THREE.MeshLambertMaterial({color: 0xffffff}));
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.y = -0.1;
+        plane.receiveShadow = true;
+        scene.add(plane);
+
+        // 方块
+        let whiteCube = new THREE.Mesh(new THREE.CubeGeometry(0.5, 2, 0.5),
+        new THREE.MeshLambertMaterial(
+          {
+            color: 0x3c7db1,
+            ambient: 0x3c7db1
+          }
+        ));
+        whiteCube.position.x = 2;
+        whiteCube.castShadow = true;
+        scene.add(whiteCube);
+
+        var light = new THREE.SpotLight(0xffffff, 1, 100, Math.PI / 6, 25);
+        light.position.set(2, 5, 3);
+        light.target = whiteCube;
+        light.castShadow = true;
+        scene.add(light);
+        requestAnimationFrame(draw);
+        let alpha = 0;
+        function draw() {
+          alpha += 0.01;
+          if (alpha > Math.PI * 2) {
+              alpha -= Math.PI * 2;
+          }
+          
+          whiteCube.position.set(2 * Math.cos(alpha), 0, 2 * Math.sin(alpha));
+          // 8.渲染
+          renderer.render(scene, camera);
+          
+          requestAnimationFrame(draw);
+        }
+      }
+
+    </script>
+</body>
+</html>

@@ -11,7 +11,10 @@
 <body>
     <!-- 2.创建容器 -->
     <canvas id="mainCanvas" width="400px" height="300px"></canvas>
-    <!-- <canvas id="mainCanvasa" width="400px" height="300px"></canvas> -->
+    <canvas id="mainCanvasa" width="400px" height="300px"></canvas>
+    <canvas id="mainCanvasb" width="400px" height="300px"></canvas>
+    <canvas id="mainCanvasc" width="400px" height="300px"></canvas>
+    <canvas id="mainCanvasd" width="400px" height="300px"></canvas>
     <script>
         // 3.初始化方法
       window.onload = function () {
@@ -51,28 +54,118 @@
         // 9.渲染
         renderer.render(scene, camera)
 
-        // setTimeout(() => {
-        //   const renderera = new THREE.WebGLRenderer({
-        //     canvas: document.getElementById("mainCanvasa")
-        //   })
-        //   const scene = new THREE.Scene();
-        //   const camera = new THREE.OrthographicCamera(-7, 6, 5.75, -4.75, 0.1, 100);
-        //   camera.position.set(25, 25, 25);
-        //   camera.lookAt(new THREE.Vector3(1, 0, 0));
-        //   scene.add(camera)
-        //   const light = new THREE.PointLight(0xffffff, 1, 200);
-        //   light.position.set(10, 15, 25);
-        //   scene.add(light);
-        //   const texture = THREE.ImageUtils.loadTexture('../img/0.png', {}, () => {
-        //     renderer.render(scene, camera);
-        //   });
-        //   const material = new THREE.MeshLambertMaterial({
-        //     map: texture
-        //   });
-        //   const cube = new THREE.Mesh(new THREE.CubeGeometry(5, 5, 5), material);
-        //   scene.add(cube);
-        //   renderera.render(scene, camera)
-        // }, 10)
+        // 球形效果
+        setTimeout(() => {
+          const renderera = new THREE.WebGLRenderer({
+            canvas: document.getElementById("mainCanvasa")
+          })
+          const scene = new THREE.Scene();
+          const camera = new THREE.OrthographicCamera(-8, 7, 6.75, -5.75, 0.1, 100);
+          camera.position.set(25, 25, 25);
+          camera.lookAt(new THREE.Vector3(1, 0, 0));
+          scene.add(camera)
+          const light = new THREE.PointLight(0xffffff, 1, 200);
+          light.position.set(10, 15, 25);
+          scene.add(light);
+          const texture = THREE.ImageUtils.loadTexture('../img/0.png', {}, () => {
+            renderera.render(scene, camera);
+          });
+          const material = new THREE.MeshLambertMaterial({
+            map: texture
+          });
+          const cube = new THREE.Mesh(new THREE.SphereGeometry(5, 50, 50), material);
+          scene.add(cube);
+          renderera.render(scene, camera)
+        }, 10)
+
+        // 多面贴图
+        setTimeout(() => {
+          const rendererb = new THREE.WebGLRenderer({
+            canvas: document.getElementById("mainCanvasb")
+          })
+          const scene = new THREE.Scene();
+          const camera = new THREE.OrthographicCamera(-8, 7, 6.75, -5.75, 0.1, 100);
+          camera.position.set(25, 25, 25);
+          camera.lookAt(new THREE.Vector3(0, 0, 0));
+          scene.add(camera)
+          const light = new THREE.PointLight(0xffffff, 1, 100);
+          light.position.set(10, 15, 20);
+          scene.add(light);
+          const material = []
+          for (let i = 0; i < 6; i++) {
+            material.push(
+              new THREE.MeshLambertMaterial({
+                map: THREE.ImageUtils.loadTexture('../img/' + i + '.png', {}, () => {
+                  rendererb.render(scene, camera);
+                }),
+                overdraw: true
+              })
+            )
+          }
+          const cube = new THREE.Mesh(new THREE.CubeGeometry(5, 5, 5), new THREE.MeshFaceMaterial(material));
+          scene.add(cube);
+          rendererb.render(scene, camera)
+        }, 10)
+
+        // 棋盘格
+        setTimeout(() => {
+          const rendererc = new THREE.WebGLRenderer({
+            canvas: document.getElementById("mainCanvasc")
+          })
+          const scene = new THREE.Scene();
+          const camera = new THREE.OrthographicCamera(-8, 6, 5.75, -5.75, 0.1, 100);
+          camera.position.set(0, 0, 25);
+          camera.lookAt(new THREE.Vector3(1, 0, 0));
+          scene.add(camera)
+          const light = new THREE.PointLight(0xffffff, 1, 200);
+          light.position.set(10, 15, 20);
+          scene.add(light);
+          // 导入纹理贴图
+          let texture = THREE.ImageUtils.loadTexture('../img/0.png', {}, () => {
+            rendererc.render(scene, camera);
+          });
+
+          // 7.创建材质
+          const material = new THREE.MeshLambertMaterial({
+          // 使用纹理贴图
+          map: texture
+          });
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(4, 4);
+          const cube = new THREE.Mesh(new THREE.PlaneGeometry(10, 10, 5), material);
+          scene.add(cube);
+          rendererc.render(scene, camera)
+        }, 10)
+
+        // 棋盘格2.0
+        setTimeout(() => {
+          const rendererd = new THREE.WebGLRenderer({
+            canvas: document.getElementById("mainCanvasd")
+          })
+          const scene = new THREE.Scene();
+          const camera = new THREE.OrthographicCamera(-8, 6, 5.75, -5.75, 0.1, 100);
+          camera.position.set(0, 0, 25);
+          camera.lookAt(new THREE.Vector3(1, 0, 0));
+          scene.add(camera)
+          const light = new THREE.PointLight(0xffffff, 1, 200);
+          light.position.set(10, 15, 20);
+          scene.add(light);
+          // 导入纹理贴图
+          let texture = THREE.ImageUtils.loadTexture('../img/chess.png', {}, () => {
+            rendererd.render(scene, camera);
+          });
+
+          // 7.创建材质
+          const material = new THREE.MeshLambertMaterial({
+          // 使用纹理贴图
+          map: texture
+          });
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(4, 4);
+          const cube = new THREE.Mesh(new THREE.PlaneGeometry(10, 10, 5), material);
+          scene.add(cube);
+          rendererd.render(scene, camera)
+        }, 10)
       }
 
     </script>

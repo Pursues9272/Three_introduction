@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lambert材质</title>
+    <title>Document</title>
     <!-- 声明外部文件 -->
     <script type="text/javascript" src="../lib/three.js"></script>
-    <style>
-        /* body{
-            background-color: #3c7db1;
-        } */
-    </style>
 </head>
 <body>
     <!-- 2.创建容器 -->
@@ -24,37 +19,56 @@
           canvas: document.getElementById("mainCanvas")
         })
         // 设置颜色，第一个参数为颜色，第二个参数为透明度
-        // renderer.setClearColor(0x7fffd4, 0.6);
-        console.log(renderer)
+        renderer.setClearColor(0x7fffd4, 0.6);
 
         // 5.创建场景
         const scene = new THREE.Scene();
-        console.log(scene)
 
         // 6.创建相机
         const camera = new THREE.OrthographicCamera(-7, 6, 5.75, -4.75, 0.1, 100);
-        camera.position.set(25, 25, 25);
+        camera.position.set(15, 25, 25);
         camera.lookAt(new THREE.Vector3(1, 0, 0));
         scene.add(camera)
 
-        // 7.光照
-        const light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(10, 15, 5);
-        scene.add(light);
-
-        // 8.材质定义Lambert材质
+        // 7.创建材质
         const material = new THREE.MeshLambertMaterial({
+          // 可见性
+          visible: true,
+          // 渲染面片正面或是反面
+          side: THREE.DoubleSide,
           // 十六进制RGB颜色
-          color: 0xffff00,
-          // 自发光颜色，可以用来表现光源的颜色。单独使用红色的自发光
-          emissive: 0xff0000
+          color: 0x3c7db1,
+          // 渲染线/面
+          wireframe: false
         });
         
-        // 9.创建球体
-        const cube = new THREE.Mesh(new THREE.SphereGeometry(4, 45, 45), material);
-        scene.add(cube);
+        // 8.创建形状
+        const geometry = new THREE.CubeGeometry(1, 2, 3);
         
-        // 10.渲染
+        // 9.创建网格
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh)
+
+        // 修改属性
+        // 位置多个属性修改的两种写法
+        mesh.position.set(1.5, -0.5, 0);
+        mesh.position = new THREE.Vector3(1.5, -0.5, 0);
+        // 单个属性修改
+        mesh.position.z = 1;
+        console.log(mesh)
+        // 旋转
+        mesh.rotation.x = 30
+        // 缩放
+        mesh.scale.x = 5
+        mesh.scale.y = 1.5
+        mesh.scale.z = .5
+
+        // 10.创建光照
+        const light = new THREE.DirectionalLight(0xffffff);
+        light.position.set(20, 10, 5);
+        scene.add(light);
+
+        // 11.渲染
         renderer.render(scene, camera)
       }
 
