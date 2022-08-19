@@ -120,10 +120,13 @@
           camera.position.set(15, 25, 25);
           camera.lookAt(new THREE.Vector3(0, 2, 0));
           scene.add(camera)
-
+ 
+          const light = new THREE.DirectionalLight(0xffffff);
+          light.position.set(20, 10, 5);
+          scene.add(light);
           let mtlLoader = new THREE.MTLLoader();
           mtlLoader.setPath('../model/');
-          mtlLoader.load('port.mtl', function(materials) {
+          mtlLoader.load('port.mtl', function(materials) {  
           console.log(materials)
             materials.preload();
             let objLoader = new THREE.OBJLoader();
@@ -133,17 +136,13 @@
                 object.position.y = - 95;
                 if (object.children.length > 0) {
                     scene.add( object.children[0] );
+              console.log(object)
+              console.log(object.children[0])
+            rendererim.render(scene, camera)
                 }
             });
             console.log(objLoader)
           });
- 
-          const light = new THREE.DirectionalLight(0xffffff);
-          light.position.set(20, 10, 5);
-          scene.add(light);
-          setTimeout(() => {
-            rendererim.render(scene, camera)
-          },20)
         },10)
       }
 

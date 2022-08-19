@@ -88,7 +88,10 @@
               obj.traverse(function(child) {
                   if (child instanceof THREE.Mesh) {
                       // 双面绘制
-                      child.material.side = THREE.DoubleSide;
+                      child.material = new THREE.MeshLambertMaterial({
+                                color: 0xffff00,
+                                side: THREE.DoubleSide
+                            });
                   }
               });
           

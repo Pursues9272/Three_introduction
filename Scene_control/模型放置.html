@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型放置</title>
+    <!-- 声明外部文件 -->
+    <script type="text/javascript" src="../lib/three.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/MTLLoader.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <style>
+        #mainCanvas{
+          width: 100%;
+          height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 2.创建容器 -->
+    <canvas id="mainCanvas"></canvas>
+    <script>
+        // 3.初始化方法
+      window.onload = function () {
+
+        // 4.渲染器将和Canvas进行绑定
+        const renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("mainCanvas")
+        })
+        // 设置颜色，第一个参数为颜色，第二个参数为透明度
+        // renderer.setClearColor(0xffffff);
+
+        // 5.创建场景
+        const scene = new THREE.Scene();
+
+        // 6.创建相机
+        const camera = new THREE.OrthographicCamera(-7, 6, 5.75, -4.75, 0.1, 100);
+        camera.position.set(15, 25, 25);
+        camera.lookAt(new THREE.Vector3(1, 0, 0));
+        scene.add(camera)
+
+        // 7.模型导入
+        // let loader = new THREE.OBJLoader();
+        //   loader.load('../model/21-hh/hhyy.obj', function(obj) {
+        //       console.log(obj)
+        //       obj.traverse(function(child) {
+        //           if (child instanceof THREE.Mesh) {
+        //               // 双面绘制
+        //               child.material.side = THREE.DoubleSide;
+        //           }
+        //       });
+        //       obj.scale.set(0.05,0.05,0.05);
+        //       scene.add(obj);
+        //       animate()
+        //   });
+
+        // 10.创建光照
+        const light = new THREE.DirectionalLight(0xffffff);
+        light.position.set(20, 10, 5);
+        scene.add(light);
+
+        var control;
+        // 控制器
+        function initControl() {
+          control = new THREE.OrbitControls(camera, document.getElementById("mainCanvas"));
+
+          // 是否开启当前的控制器 默认值为true
+          control.enabled = true;
+          // 设置当前控制器的焦点 默认为原点位置
+          control.target = new THREE.Vector3();
+          // 控制器控制相机可移动的距离焦点的最远距离和最近距离 默认值是0到无限远的距离 此属性适用于透视相机 PerspectiveCamera
+          control.minDistance = 0;
+          control.maxDistance = Infinity;
+  
+          // 控制器控制相机可移动的距离焦点的最远距离和最近距离 默认值是0到无限远的距离 此属性适用于正交相机 OrthographicCamera
+          control.minZoom = 0;
+          control.maxZoom = Infinity;
+  
+          // 相机垂直方向移动的弧度，默认从顶部九十度到底部九十度 默认值是0和Math.PI
+          control.minPolarAngle = 0; // 弧度
+          control.maxPolarAngle = Math.PI; // 弧度
+  
+          // 当前相机水平位置下在焦点的z轴正方向可以偏转的弧度，默认无限旋转。
+          // 如果不可以无限旋转，只能够从左方和右方旋转180度，可以设置成minAzimuthAngle = - Math.PI maxAzimuthAngle = Math.PI
+          control.minAzimuthAngle = - Infinity; // 弧度
+          control.maxAzimuthAngle = Infinity; // 弧度
+  
+          // 是否开启拖拽后的惯性（停止拖拽后，相机会慢慢停下来），如果开启了当前的属性，还需要在动画循环中调用相机的update()更新位置
+          control.enableDamping = false;
+          control.dampingFactor = 0.25; //设置当前的惯性的阻力，值越小阻力越小
+  
+          // 设置控制器是否缩放以及缩放速度
+          control.enableZoom = true;
+          control.zoomSpeed = 1.0;
+  
+          // 设置控制器是否可以旋转以及旋转速度
+          control.enableRotate = true;
+          control.rotateSpeed = 1.0;
+  
+          // 是否开启改变视角焦点中心以及移动视角中心的速度
+          control.enablePan = true;
+          control.panSpeed = 1.0;
+          control.screenSpacePanning = false; // 移动相机位置焦点默认是修改x轴和z轴方向，如果将此值修改为true，焦点位置将修改x轴和y轴方向
+          control.keyPanSpeed = 7.0;	// 修改焦点位置移动的速度
+  
+          // 设置当前是否自动旋转
+          control.autoRotate = false;
+          control.autoRotateSpeed = 2.0; // 默认速度为30秒旋转一周的速度，一秒60帧的情况下
+  
+          // 是否开启键盘控制
+          control.enableKeys = true;
+  
+          // 控制焦点的位置偏移的键盘按键 默认是上下左右键的 keyCode
+          control.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+  
+          // 控制相机控制器的鼠标按键设置 默认左键旋转，中键缩放，右键移动焦点位置
+          control.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
+        }
+        // 渲染
+        function render() {
+          control.update();
+          renderer.render(scene, camera);
+        }
+        // 动画
+        function animate() {
+          render();
+          requestAnimationFrame(animate);
+        }
+        initControl()
+        function initmodel() {
+          // 材质
+          let mtlLoader = new THREE.MTLLoader();
+          // 材质实例
+          let mat = null;
+          // 加载器
+          mtlLoader.load('../model/21-hh/hhyy.mtl', function(materials) {
+            // 调用预加载函数
+            console.log(2222)
+            console.log(materials)
+            materials.side = THREE.DoubleSide;
+            materials.ignoreZeroRGBs = true;
+            materials.invertTrProperty = true;
+            materials.preload();
+            mat = materials
+          },faa => {
+            console.log(1111)
+            console.log(faa)
+          },fbb => {
+            console.log(2222)
+            console.log(fbb)
+          })
+          // mtlLoader.setMaterialOptions.side = THREE.DoubleSide;
+          // mtlLoader.setMaterialOptions.ignoreZeroRGBs = true;
+          // mtlLoader.setMaterialOptions.invertTrProperty = true;
+          let objLoader = new THREE.OBJLoader();
+            // MaterialCreator 实例
+            objLoader.setMaterials(mat);
+            objLoader.load('../model/21-hh/hhyy.obj', function ( object ) {
+              scene.add(object)
+              animate()
+            })
+        }
+        initmodel()
+      }
+
+    </script>
+</body>
+</html>
