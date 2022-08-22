@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型放置</title>
+    <script type="text/javascript" src="../lib/three.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/MTLLoader.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <style>
+        #mainCanvas{
+          width: 100%;
+          height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mainCanvas"></canvas>
+    <script>
+    // 相机，场景，渲染器
+    let camera, scene, renderer, controls;
+    init()
+    // 初始化方法
+    function init() {
+      // 2.创建场景
+      scene = new THREE.Scene();
+      // 天空盒贴图
+      let urls = [
+	    '../img/skybox2/posx.jpg',
+	    '../img/skybox2/negx.jpg',
+	    '../img/skybox2/posy.jpg',
+	    '../img/skybox2/negy.jpg',
+	    '../img/skybox2/posz.jpg',
+	    '../img/skybox2/negz.jpg'
+	  ];
+      var cubeLoader = new THREE.CubeTextureLoader();
+      scene.background = cubeLoader.load(urls);
+      // 1.将渲染器和Canvas绑定
+      renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById("mainCanvas"),
+		antialias: true,
+		logarithmicDepthBuffer: true,
+      })
+      renderer.setClearColor(0x7fffd4, 0.6);
+
+      // 3.创建相机
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      // 将摄像机对准场景的中心
+	  camera.position.x = 10;
+	  camera.position.y = 50;
+	  camera.position.z = 90;
+	  camera.lookAt(scene.position);
+
+      // 4.创建控制器
+      controls = new THREE.OrbitControls(camera);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      // 抗锯齿，清晰度设置
+      renderer.setPixelRatio( window.devicePixelRatio );
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+      // 5.创建光源
+      // 环境光
+      const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
+	  scene.add( ambientLight );
+
+      // 将平面添加到场景中
+	  let plane = createPlaneGeometryBasicMaterial();
+	  scene.add(plane);
+
+      // 模型载入进度
+      const onProgress = function ( xhr ) {
+        if ( xhr.lengthComputable ) {
+          const percentComplete = xhr.loaded / xhr.total * 100;
+          console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+        }
+      };
+      let mtlLoader = new THREE.MTLLoader();
+        mtlLoader.setPath( '../model/21-hh/' )
+        mtlLoader.load( 'hhyy.mtl', function ( materials ) {
+          materials.preload();
+          console.log(materials)
+          let objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials )
+          objLoader.setPath( '../model/21-hh/' )
+          objLoader.load( 'hhyy.obj', function ( object ) {
+            object.scale.set(0.05,0.05,0.05);
+            object.position.y = 1
+            object.position.x = 10
+            object.position.z = 10
+            object.rotation.x = -(Math.PI / 2)
+            scene.add( object );
+            console.log(Math.PI)
+            console.log(object)
+            // const box = new THREE.Box3().setFromObject(object);
+            // const boxSize = box.getSize(new THREE.Vector3()).length();
+            // const boxCenter = box.getCenter(new THREE.Vector3());
+        	// frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
+            // controls.maxDistance = boxSize * 10;
+        	// controls.target.copy(boxCenter);
+            controls.update();
+          }, onProgress)
+        })
+
+      animate();
+    }
+    function createPlaneGeometryBasicMaterial() {
+	  var textureLoader = new THREE.TextureLoader();
+	  var cubeMaterial = new THREE.MeshStandardMaterial({
+	  	map: textureLoader.load("../img/skybox2/cd.jpg"),
+	  });
+	  cubeMaterial.map.wrapS = THREE.RepeatWrapping;
+	  cubeMaterial.map.wrapT = THREE.RepeatWrapping;
+	  cubeMaterial.map.repeat.set(180, 180)
+	  // 创建地平面并设置大小
+	  var planeGeometry = new THREE.PlaneGeometry(1200, 1200);
+	  var plane = new THREE.Mesh(planeGeometry, cubeMaterial);
+	  // 设置平面位置并旋转
+	  plane.rotation.x = -0.5 * Math.PI;
+	  plane.position.x = 0;
+	  plane.position.z = 0;
+	  return plane;
+	}
+      // 动画控制
+      function animate() {
+		controls.update();
+        requestAnimationFrame( animate );
+        render();
+      }
+      // 绑定渲染
+      function render() {
+        camera.lookAt( scene.position );
+        renderer.render( scene, camera );
+      }
+    </script>
+</body>
+</html>
